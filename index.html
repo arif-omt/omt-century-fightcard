@@ -107,6 +107,7 @@ header p { color: #b9a590; font-size: 0.95rem; }
   <select id="typeF" onchange="applyFilters()"><option value="">All Types</option><option value="match">Matches</option><option value="tournament">Tournaments</option><option value="unmatched">Unmatched</option></select>
   <select id="sectionF" onchange="applyFilters()"><option value="">All Classes</option><option value="B KLASSE">B KLASSE</option><option value="C JR">C JR</option><option value="C KLASSE">C KLASSE</option><option value="D JR">D JR</option><option value="D KLASSE">D KLASSE</option><option value="DIPLOM">DIPLOM</option><option value="SUPERFIGHT">SUPERFIGHT</option></select>
   <select id="sexF" onchange="applyFilters()"><option value="">All</option><option value="Female">Female</option><option value="Male">Male</option></select>
+  <select id="gymF" onchange="applyFilters()"><option value="">All Gyms</option><option value="Eidsvoll Kampsportklubb">Eidsvoll Kampsportklubb</option><option value="Fjellhamar Kampsportklubb">Fjellhamar Kampsportklubb</option><option value="Frontline Jessheim">Frontline Jessheim</option><option value="Frontline Muay Thai">Frontline Muay Thai</option><option value="Helsfyr IL (OFC)">Helsfyr IL (OFC)</option><option value="IK OKSA">IK OKSA</option><option value="IL Skrim Muay Thai">IL Skrim Muay Thai</option><option value="Lillestrøm Thaiboxing Klubb">Lillestrøm Thaiboxing Klubb</option><option value="Moss Muay Thai">Moss Muay Thai</option><option value="Nidaros Muay Thai Klubb">Nidaros Muay Thai Klubb</option><option value="Novus Academy">Novus Academy</option><option value="Orion MMA Academy">Orion MMA Academy</option><option value="Oslo Muay Thai">Oslo Muay Thai</option><option value="Siam Muay Thai">Siam Muay Thai</option><option value="Sogn Martial Arts">Sogn Martial Arts</option><option value="Sogndal IL">Sogndal IL</option><option value="Stavanger Kampsportklubb">Stavanger Kampsportklubb</option><option value="Vallhall Kampsport">Vallhall Kampsport</option><option value="Värmdo Muay Thai">Värmdo Muay Thai</option><option value="Wolf Gym">Wolf Gym</option></select>
   <span class="filter-count" id="count"></span>
 </div>
 <div class="update-bar">
@@ -127,10 +128,12 @@ function applyFilters() {
   const t=document.getElementById("typeF").value;
   const s=document.getElementById("sectionF").value;
   const sx=document.getElementById("sexF").value;
+  const gym=document.getElementById("gymF").value;
   const filtered=DATA.filter(m=>{
     if(t&&m.type!==t) return false;
     if(s&&m.section!==s) return false;
     if(sx&&m.sex!==sx) return false;
+    if(gym&&!m.fighters.some(f=>f.gym===gym)) return false;
     if(q){const h=m.fighters.map(f=>f.firstName+" "+f.lastName+" "+f.gym).join(" ").toLowerCase();if(!h.includes(q)) return false;}
     return true;
   });
