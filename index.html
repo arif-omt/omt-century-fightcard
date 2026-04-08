@@ -221,8 +221,8 @@ function closeDetail(){document.getElementById("detailCol").classList.remove("op
 // --- Google Sheet update check ---
 const SHEET_ID="1GdHlr70ABKPzdKtNkZA7_mnnI1zYqc-YDkTSQhHM-uE";
 const CSV_URLS=[
-  `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=1023799667`,
-  `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=1686552965`
+  `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=1023799667`,
+  `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=1686552965`
 ];
 const BASELINE_HASH="917fb0065f21a4bfac37c36dd9cac9a8";
 const BASELINE_LEN=22555;
@@ -251,13 +251,19 @@ async function checkForUpdates(){
     for(const p of parts){combined.set(new Uint8Array(p),offset);offset+=p.byteLength;}
     const hash=await simpleMD5(combined);
 
-    // Compare by length (reliable across platforms) + hash for extra confidence
-    if(totalLen===BASELINE_LEN){
+    // On first successful check, store hash as baseline if none exists
+    if(!localStorage.getItem("omt_baseline_hash")){
+      localStorage.setItem("omt_baseline_hash", hash);
+      localStorage.setItem("omt_baseline_len", String(totalLen));
+    }
+    const baseHash=localStorage.getItem("omt_baseline_hash")||BASELINE_HASH;
+    const baseLen=parseInt(localStorage.getItem("omt_baseline_len")||BASELINE_LEN);
+    if(hash===baseHash){
       status.innerHTML='<span class="dot current"></span> Data is up to date';
       const now=new Date();
       status.innerHTML+=' <span style="color:#8a7e72;font-size:0.75rem">(checked '+now.toLocaleTimeString()+')</span>';
     } else {
-      const diff=totalLen-BASELINE_LEN;
+      const diff=totalLen-baseLen;
       status.innerHTML='<span class="dot changed"></span> Sheet has been updated! ('+
         (diff>0?"+":"")+diff+' bytes) <a href="https://docs.google.com/spreadsheets/d/'+SHEET_ID+'" target="_blank" style="color:#1565c0;text-decoration:underline;font-size:0.8rem">Open sheet</a>';
     }
